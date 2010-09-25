@@ -3,6 +3,10 @@ FastaHack
 =========
 
 python/cython wrapper for `fastahack`_ library
+The c++ library, fastahack, reads `.fai files`_ files for an index,
+as created by e.g. `samtools`_ and the fastahack commandline interface.
+Currently, the index (chr => (position, line length)) is read
+into memory.
 
 ::
 
@@ -24,3 +28,5 @@ If `python setup.py install` gives an error, you may need to run
 
 
 .. _`fastahack`: http://github.com/ekg/fastahack/
+.. _`samtools`: http://samtools.sourceforge.net/
+.. _`.fai files`: http://biostar.stackexchange.com/questions/1496/can-you-please-tell-me-where-i-find-information-about-fai-file-format
