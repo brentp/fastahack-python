@@ -1,5 +1,5 @@
-# requires cython >= 0.13
-# wraps: http://github.com/ekg/fastahack
+### requires cython >= 0.13
+### wraps: http://github.com/ekg/fastahack
 
 from libcpp.vector cimport vector
 

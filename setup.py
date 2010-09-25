@@ -11,9 +11,11 @@ setup(
               include_dirs=["lib/"],
               language="c++"),
     ],
-    package_data = {'lib': ['*.pyx', "*.c", "*.h"]},
+    package_data = {'lib': ['*.pyx', "*.c", "*.h", "README.rst"]},
     package_dir = {"fastahack": "fastahack"},
     cmdclass = {'build_ext': build_ext},
-    packages = ['fastahack'],
+    packages = ['fastahack', 'fastahack.tests'],
+    author = "Brent Pedersen",
+    author_email="bpederse@gmail.com",
     #test_suite='nose.collector'
 )

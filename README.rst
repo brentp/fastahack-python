@@ -17,5 +17,10 @@ python/cython wrapper for `fastahack`_ library
     >>> f.get_sequence_names()
     ['1', '2', '3']
 
+Installation
+------------
+If `python setup.py install` gives an error, you may need to run 
+`cython fastahack/cfastahack.pyx`
+
 
 .. _`fastahack`: http://github.com/ekg/fastahack/

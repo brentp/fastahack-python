@@ -1,0 +1,4 @@
+include README.rst
+include fastahack/cfastahack.pyx
+include fastahack/tests/correct.fasta
+include lib/*
