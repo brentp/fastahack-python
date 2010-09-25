@@ -1,0 +1,1 @@
+from cfastahack import FastaHack
