@@ -6,7 +6,7 @@ setup(
   name = 'fastahack',
   ext_modules=[
     Extension("fastahack/cfastahack",
-              sources=["fastahack/cfastahack.pyx", "lib/Fasta.cpp", "lib/Split.cpp"],
+              sources=["fastahack/cfastahack.pyx", "lib/Fasta.cpp", "lib/split.cpp"],
               libraries=["stdc++"],
               include_dirs=["lib/"],
               language="c++"),

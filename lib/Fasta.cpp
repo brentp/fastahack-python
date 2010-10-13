@@ -33,7 +33,8 @@ void FastaIndexEntry::clear(void)
 }
 
 ostream& operator<<(ostream& output, const FastaIndexEntry& e) {
-    output << e.name << "\t" << e.length << "\t" << e.offset << "\t" <<
+    // just write the first component of the name, for compliance with other tools
+    output << split(e.name, ' ').at(0) << "\t" << e.length << "\t" << e.offset << "\t" <<
         e.line_blen << "\t" << e.line_len;
     return output;  // for multiple << operators.
 }
@@ -67,6 +68,9 @@ void FastaIndex::readIndexFile(string fname) {
                 exit(1);
             }
         }
+    } else {
+        cerr << "could not open index file " << fname << endl;
+        exit(1);
     }
 }
 
@@ -213,7 +217,10 @@ string FastaIndex::indexFileExtension() { return ".fai"; }
 
 FastaReference::FastaReference(string reffilename) {
     filename = reffilename;
-    file = fopen(filename.c_str(), "r");
+    if (!(file = fopen(filename.c_str(), "r"))) {
+        cerr << "could not open " << filename << endl;
+        exit(1);
+    }
     index = new FastaIndex();
     struct stat stFileInfo; 
     string indexFileName = filename + index->indexFileExtension(); 
