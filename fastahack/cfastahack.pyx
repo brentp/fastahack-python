@@ -1,7 +1,9 @@
-### requires cython >= 0.13
+### requires cython >= 0.17
 ### wraps: http://github.com/ekg/fastahack
 
 from libcpp.vector cimport vector
+from libc.string cimport strchr
+from libc.stdlib cimport atoi
 
 cdef extern from "<string>" namespace "std":
     cdef cppclass string:
@@ -51,12 +53,22 @@ cdef class FastaHack:
     def __dealloc__(self):
         del self.fasta_ptr
 
-    def get_sub_sequence(self, char *seq_name, int start, int end):
+    def get_sub_sequence(self, char *seq_name, int start=-1, int end=-1):
         """
         >>> f.get_sub_sequence('1', 1, 10)
         'AACCCTAACC'
 
         """
+        if start < 0:
+            colon = strchr(seq_name, ':')
+            dash = strchr(seq_name, '-')
+            if colon is NULL or dash is NULL:
+                raise ValueError("When not specifying start/end, use 'chr:start-stop' (e.g., '1:12350-23460')")
+            colon[0] = 0
+            dash[0] = 0
+            start = atoi(colon + 1)-1
+            end = atoi(dash + 1)-1
+
         cdef string sseq = self.fasta_ptr.getSubSequence(string(seq_name),
                                                          start,
                                                          # it expects len
