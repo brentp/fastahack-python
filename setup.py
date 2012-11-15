@@ -5,7 +5,7 @@ from Cython.Distutils import build_ext
 setup(
   name = 'fastahack',
   ext_modules=[
-    Extension("fastahack/cfastahack",
+    Extension("fastahack.cfastahack",
               sources=["fastahack/cfastahack.pyx", "lib/Fasta.cpp", "lib/split.cpp"],
               libraries=["stdc++"],
               include_dirs=["lib/"],
