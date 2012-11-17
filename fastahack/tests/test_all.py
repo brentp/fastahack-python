@@ -26,6 +26,7 @@ class FastaTestMore(FastaHackTest):
 
     def test_query(self):
         self.assertEqual(self.fa.get_sub_sequence("1", 0, 4), "TAACC")
+        self.assertEqual(self.fa.get_sequence("1:1-5"), "TAACC")
 
 if __name__ == "__main__":
     unittest.main()
