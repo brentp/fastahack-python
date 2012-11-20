@@ -1,7 +1,9 @@
-### requires cython >= 0.13
+### requires cython >= 0.17
 ### wraps: http://github.com/ekg/fastahack
 
 from libcpp.vector cimport vector
+from libc.string cimport strchr
+from libc.stdlib cimport atoi
 
 cdef extern from "<string>" namespace "std":
     cdef cppclass string:
@@ -37,6 +39,8 @@ cdef class FastaHack:
     'TAACCCTAACC'
     >>> f.get_sequence('1')[1:11]
     'AACCCTAACC'
+    >>> f.get_sequence('1:1-10')
+    'TAACCCTAAC'
     >>> f.get_sequence_length('1')
     630L
     >>> f.get_sequence_names()
@@ -51,7 +55,7 @@ cdef class FastaHack:
     def __dealloc__(self):
         del self.fasta_ptr
 
-    def get_sub_sequence(self, char *seq_name, int start, int end):
+    cpdef get_sub_sequence(self, char *seq_name, int start, int end):
         """
         >>> f.get_sub_sequence('1', 1, 10)
         'AACCCTAACC'
@@ -67,8 +71,24 @@ cdef class FastaHack:
         """
         >>> f.get_sequence('1')[1:11]
         'AACCCTAACC'
+        >>> f.get_sequence('1:1-10')
+        'TAACCCTAAC'
 
         """
+        cdef int start, end
+
+        colon = strchr(seq_name, ":")
+        if colon is not NULL:
+            colon[0] = 0
+            dash = strchr(colon+1, '-')
+            if dash is NULL:
+                start = end = atoi(colon + 1) - 1
+            else:
+                dash[0] = 0
+                start = atoi(colon + 1) - 1
+                end = atoi(dash + 1) - 1
+            return self.get_sub_sequence(seq_name, start, end)
+
         cdef string sseq = self.fasta_ptr.getSequence(string(seq_name))
         return sseq.c_str()
 
