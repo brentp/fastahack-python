@@ -25,11 +25,11 @@ FastaIndexEntry::~FastaIndexEntry(void)
 void FastaIndexEntry::clear(void)
 {
     name = "";
-    length = NULL;
+    length = 0;
     offset = -1;  // no real offset will ever be below 0, so this allows us to
                   // check if we have already recorded a real offset
-    line_blen = NULL;
-    line_len = NULL;
+    line_blen = 0;
+    line_len = 0;
 }
 
 ostream& operator<<(ostream& output, const FastaIndexEntry& e) {
@@ -205,17 +205,23 @@ FastaIndex::~FastaIndex(void) {
 }
 
 FastaIndexEntry FastaIndex::entry(string name) {
-    try {
-        return (*this)[name];
-    } catch (exception& e) {
-        cerr << e.what() << ": unable to find index entry for " << name << endl;
+    FastaIndex::iterator e = this->find(name);
+    if (e == this->end()) {
+        cerr << "unable to find FASTA index entry for '" << name << "'" << endl;
         exit(1);
+    } else {
+        return e->second;
     }
 }
 
 string FastaIndex::indexFileExtension() { return ".fai"; }
 
+/*
 FastaReference::FastaReference(string reffilename) {
+}
+*/
+
+void FastaReference::open(string reffilename) {
     filename = reffilename;
     if (!(file = fopen(filename.c_str(), "r"))) {
         cerr << "could not open " << filename << endl;
@@ -264,6 +270,14 @@ string FastaReference::sequenceNameStartingWith(string seqnameStart) {
     } catch (exception& e) {
         cerr << e.what() << ": unable to find index entry for " << seqnameStart << endl;
         exit(1);
+    }
+}
+
+string FastaReference::getTargetSubSequence(FastaRegion& target) {
+    if (target.startPos == -1) {
+	return getSequence(target.startSeq);
+    } else {
+	return getSubSequence(target.startSeq, target.startPos - 1, target.length());
     }
 }
 
