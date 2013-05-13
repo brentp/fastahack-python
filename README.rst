@@ -12,6 +12,8 @@ into memory.
 
     >>> from fastahack import FastaHack
     >>> f = FastaHack('fastahack/tests/correct.fasta')
+    >>> f['1:1-10']
+    'TAACCCTAAC'
     >>> f.get_sub_sequence('1', 0, 10)
     'TAACCCTAACC'
     >>> f.get_sequence('1')[1:11]

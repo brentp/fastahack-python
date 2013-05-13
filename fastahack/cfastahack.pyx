@@ -2,14 +2,18 @@
 ### wraps: http://github.com/ekg/fastahack
 
 from libcpp.vector cimport vector
+from libcpp.string cimport string
 from libc.string cimport strchr
 from libc.stdlib cimport atoi
+import cython
 
-cdef extern from "<string>" namespace "std":
-    cdef cppclass string:
-        string()
-        string(char *)
-        char * c_str()
+#cdef extern from "<string>" namespace "std":
+#    cdef cppclass string:
+#        string()
+#        string(char *)
+#        char * c_str()
+cdef extern from *:
+    ctypedef char* const_char_ptr "const char*"
 
 cdef list vec2list(vector[string] sv):
     cdef list l = []
@@ -31,6 +35,14 @@ cdef extern from "Fasta.h":
         long unsigned int sequenceLength(string seq_name)
         FastaIndex *index
 
+cdef extern from "Region.h":
+    cdef cppclass FastaRegion:
+        FastaRegion(string &region) except +
+        string startSeq
+        int startPos
+        int stopPos
+        int length()
+
 cdef class FastaHack:
     """
     >>> from fastahack import FastaHack
@@ -46,17 +58,20 @@ cdef class FastaHack:
     >>> f.get_sequence_names()
     ['1', '2', '3']
 
+    >>> f['1:1-10']
+    'TAACCCTAAC'
+
     """
     cdef FastaReference *fasta_ptr
 
-    def __init__(self, fasta_filename):
+    def __init__(self, const_char_ptr fasta_filename):
         self.fasta_ptr = new FastaReference()
         self.fasta_ptr.open(string(fasta_filename))
 
     def __dealloc__(self):
         del self.fasta_ptr
 
-    cpdef get_sub_sequence(self, char *seq_name, int start, int end):
+    cpdef get_sub_sequence(self, const_char_ptr seq_name, int start, int end):
         """
         >>> f.get_sub_sequence('1', 1, 10)
         'AACCCTAACC'
@@ -76,19 +91,9 @@ cdef class FastaHack:
         'TAACCCTAAC'
 
         """
-        cdef int start, end
-
         colon = strchr(seq_name, ":")
         if colon is not NULL:
-            colon[0] = 0
-            dash = strchr(colon+1, '-')
-            if dash is NULL:
-                start = end = atoi(colon + 1) - 1
-            else:
-                dash[0] = 0
-                start = atoi(colon + 1) - 1
-                end = atoi(dash + 1) - 1
-            return self.get_sub_sequence(seq_name, start, end)
+            return self[seq_name]
 
         cdef string sseq = self.fasta_ptr.getSequence(string(seq_name))
         return sseq.c_str()
@@ -100,6 +105,14 @@ cdef class FastaHack:
 
         """
         return self.fasta_ptr.sequenceLength(string(seq_name))
+
+    def __getitem__(self, const_char_ptr region):
+        cdef FastaRegion *r = new FastaRegion(string(region))
+        start = r.startPos - 1
+        assert r.stopPos - start > 0
+        seq = self.fasta_ptr.getSubSequence(r.startSeq, start, r.stopPos - start);
+        del r
+        return seq
 
     def get_sequence_names(self):
         """
