@@ -7,11 +7,6 @@ from libc.string cimport strchr
 from libc.stdlib cimport atoi
 import cython
 
-#cdef extern from "<string>" namespace "std":
-#    cdef cppclass string:
-#        string()
-#        string(char *)
-#        char * c_str()
 cdef extern from *:
     ctypedef char* const_char_ptr "const char*"
 
