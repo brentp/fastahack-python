@@ -18,10 +18,12 @@
 #include <algorithm>
 #include "LargeFileSupport.h"
 #include <sys/stat.h>
+#include <sys/mman.h>
 #include "split.h"
 #include <stdlib.h>
 #include <ctype.h>
 #include <unistd.h>
+#include "Region.h"
 
 using namespace std;
 
@@ -45,6 +47,7 @@ class FastaIndex : public map<string, FastaIndexEntry> {
         FastaIndex(void);
         ~FastaIndex(void);
         vector<string> sequenceNames;
+        map<string, unsigned int> sequenceID;
         void indexReference(string refName);
         void readIndexFile(string fname);
         void writeIndexFile(string fname);
@@ -56,17 +59,23 @@ class FastaIndex : public map<string, FastaIndexEntry> {
 
 class FastaReference {
     public:
-        FastaReference(string reffilename);
+        void open(string reffilename);
+        bool usingmmap;
         string filename;
+        FastaReference(void) : usingmmap(false) { }
         ~FastaReference(void);
         FILE* file;
+        void* filemm;
+        size_t filesize;
         FastaIndex* index;
         vector<FastaIndexEntry> findSequencesStartingWith(string seqnameStart);
         string getSequence(string seqname);
         // potentially useful for performance, investigate
         // void getSequence(string seqname, string& sequence);
         string getSubSequence(string seqname, int start, int length);
+	string getTargetSubSequence(FastaRegion& target);
         string sequenceNameStartingWith(string seqnameStart);
+        unsigned int getSequenceID(string seqname);
         long unsigned int sequenceLength(string seqname);
 };
 
