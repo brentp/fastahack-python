@@ -24,8 +24,8 @@ cdef extern from "Fasta.h":
         vector[string] sequenceNames
 
     cdef cppclass FastaReference:
-        FastaReference()
-        FastaReference(string fasta_filename)
+        FastaReference() except +
+        void open(string fasta_filename)
         string getSequence(string seq_name)
         string getSubSequence(string seq_name, int start, int length)
         long unsigned int sequenceLength(string seq_name)
@@ -50,7 +50,8 @@ cdef class FastaHack:
     cdef FastaReference *fasta_ptr
 
     def __init__(self, fasta_filename):
-        self.fasta_ptr = new FastaReference(string(fasta_filename))
+        self.fasta_ptr = new FastaReference()
+        self.fasta_ptr.open(string(fasta_filename))
 
     def __dealloc__(self):
         del self.fasta_ptr
