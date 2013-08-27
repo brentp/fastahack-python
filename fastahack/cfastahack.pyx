@@ -116,3 +116,5 @@ cdef class FastaHack:
 
         """
         return vec2list(self.fasta_ptr.index.sequenceNames)
+
+    names = property(get_sequence_names)

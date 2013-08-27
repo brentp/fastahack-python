@@ -12,6 +12,7 @@ setup(
               language="c++"),
     ],
     package_data = {'lib': ['*.pyx', "*.c", "*.h", "README.rst"]},
+    version='0.1',
     package_dir = {"fastahack": "fastahack"},
     cmdclass = {'build_ext': build_ext},
     packages = ['fastahack', 'fastahack.tests'],

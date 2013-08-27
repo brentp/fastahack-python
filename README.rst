@@ -20,7 +20,7 @@ into memory.
     'AACCCTAACC'
     >>> f.get_sequence_length('1')
     630L
-    >>> f.get_sequence_names()
+    >>> f.names
     ['1', '2', '3']
 
 Installation
